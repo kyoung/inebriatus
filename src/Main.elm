@@ -1,11 +1,9 @@
-module App exposing (main)
+module Main exposing (..)
 
--- http://blog.jenkster.com/2016/04/how-i-structure-elm-apps.html
-
-import Html exposing(program)
+import Html exposing (program)
 import State
-import View
 import Types
+import View
 
 
 main : Program Never Types.Model Types.Msg
@@ -16,3 +14,7 @@ main =
         , subscriptions = State.subscriptions
         , view = View.root
         }
+
+
+
+-- http://blog.jenkster.com/2016/04/how-i-structure-elm-apps.html
