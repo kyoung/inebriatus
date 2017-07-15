@@ -1,8 +1,9 @@
 module View exposing (..)
 
-import Html exposing (Html, body, br, div, p, text)
+import Html exposing (Html, body, br, button, div, li, p, text, ul)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
+import List exposing (map)
 import Types exposing (Model, Msg)
 
 
@@ -21,12 +22,23 @@ indicator model =
     div
         [ class "indicator" ]
         [ p [] [ text "indicator" ]
-        , p [] [ text "Drink Times: ", text (String.concat (List.map toString model.drinkTimes)) ]
+        , button [ onClick Types.GetTimeAndDrink ] [ text "Drink" ]
+        , ul
+            []
+            (map (\l -> li [] [ text (toString l) ]) model.drinkTimes)
         ]
 
 
 configurator : Model -> Html Msg
 configurator model =
+    if model.configOpen then
+        configuratorOpen model
+    else
+        configuratorClosed model
+
+
+configuratorOpen : Model -> Html Msg
+configuratorOpen model =
     div
         [ class "configurator" ]
         [ div
@@ -35,3 +47,10 @@ configurator model =
         , p [] [ text "configurator" ]
         , p [] [ text "Offset: ", text (toString model.offset) ]
         ]
+
+
+configuratorClosed : Model -> Html Msg
+configuratorClosed model =
+    div
+        []
+        [ p [ onClick Types.ToggleConfig ] [ text "configurator " ] ]

@@ -1,5 +1,7 @@
 module State exposing (init, subscriptions, update)
 
+import Task
+import Time exposing (Time)
 import Types exposing (..)
 
 
@@ -11,14 +13,17 @@ init =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update action model =
     case action of
-        Drink ->
-            ( model, Cmd.none )
+        GetTimeAndDrink ->
+            ( model, Task.perform Drink Time.now )
+
+        Drink time ->
+            ( { model | drinkTimes = List.append model.drinkTimes [ time ] }, Cmd.none )
 
         SetOffset value ->
             ( model, Cmd.none )
 
         ToggleConfig ->
-            ( model, Cmd.none )
+            ( { model | configOpen = not model.configOpen }, Cmd.none )
 
         SetMode mode ->
             ( model, Cmd.none )

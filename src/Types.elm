@@ -11,7 +11,8 @@ type alias Model =
 
 
 type Msg
-    = Drink
+    = Drink Time.Time
+    | GetTimeAndDrink
     | SetOffset Int
     | ToggleConfig
     | SetMode String
