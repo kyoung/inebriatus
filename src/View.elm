@@ -1,10 +1,14 @@
 module View exposing (..)
 
+import Elements exposing (..)
 import Html exposing (Html, body, br, button, div, li, p, text, ul)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import List exposing (map)
 import Types exposing (Model, Msg)
+
+
+-- use this instead http://package.elm-lang.org/packages/mdgriffith/style-elements/3.2.3
 
 
 root : Model -> Html Msg
