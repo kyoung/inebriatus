@@ -11,6 +11,8 @@ init =
       , offset = 1
       , configOpen = False
       , mode = Types.PercentageClickFourOz
+      , lightsLit = 0.0
+      , lightsTotal = 12
       }
     , Cmd.none )
 
@@ -22,7 +24,7 @@ update action model =
             ( model, Task.perform Drink Time.now )
 
         Drink time ->
-            ( { model | drinkTimes = List.append model.drinkTimes [ time ] }, Cmd.none )
+            ( { model | drinkTimes = List.append model.drinkTimes [ time ], lightsLit =  calcLights ( List.append model.drinkTimes [ time ] ) }, Cmd.none )
 
         SetOffset value ->
             ( model, Cmd.none )
@@ -32,6 +34,11 @@ update action model =
 
         SetMode newMode ->
             ( { model | mode = newMode }, Cmd.none )
+
+
+calcLights : List Time -> Float
+calcLights drinkTimes =
+  toFloat ( List.length drinkTimes )
 
 
 subscriptions : Model -> Sub Msg

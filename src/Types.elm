@@ -8,6 +8,8 @@ type alias Model =
     , offset : Int
     , configOpen : Bool
     , mode : Mode
+    , lightsLit : Float
+    , lightsTotal : Int
     }
 
 

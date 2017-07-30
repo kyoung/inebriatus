@@ -22,6 +22,9 @@ type Styles
   | Main
   | Indicator
   | Configurator
+  | Light
+  | LitLight
+  | Drink
 
 
 stylesheet : StyleSheet Styles variation
@@ -38,6 +41,17 @@ stylesheet =
       ]
     , style Configurator
       [ Border.all 1
+      , Style.cursor "pointer"
+      ]
+    , style Light
+      [ Border.all 1
+      ]
+    , style LitLight
+      [ Border.all 1
+      ,  Color.background Color.darkCharcoal
+      ]
+    , style Drink
+      [ Style.cursor "pointer"
       ]
     ]
 
@@ -58,13 +72,21 @@ titleBar =
 
 
 indicator model =
-  column Indicator
+  row Indicator
     []
-    (List.map ( \l -> el None [] ( Element.text (toString l) ) ) model.drinkTimes)
+    ( List.map ( \n -> indicatorLight model.lightsLit n  ) ( List.range 0 ( model.lightsTotal - 1 ) ) )
+
+
+indicatorLight : Float -> Int  -> Element Styles variation msg
+indicatorLight lit n =
+  if ( toFloat n ) < lit then
+    circle 10 LitLight [] <| el None [] ( Element.text "" )
+  else
+    circle 10 Light [] <| el None [] ( Element.text "" )
 
 
 drink =
-  el None [ onClick Types.GetTimeAndDrink ] <| Element.button ( Element.text "BIBE")
+  el Drink [ onClick Types.GetTimeAndDrink ] <| Element.button ( el Drink [] ( Element.text "BIBE" ) )
 
 
 configurator model =
