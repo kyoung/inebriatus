@@ -1,60 +1,86 @@
 module View exposing (..)
 
-import Elements exposing (..)
-import Html exposing (Html, body, br, button, div, li, p, text, ul)
+import Color
+import Element exposing (..)
+import Element.Attributes exposing (..)
+import Element.Events exposing (onClick)
+import Style exposing (..)
+import Style.Border as Border
+import Style.Color as Color
+
+import Html exposing (Html)
 import Html.Attributes exposing (class)
-import Html.Events exposing (onClick)
 import List exposing (map)
 import Types exposing (Model, Msg)
 
 
--- use this instead http://package.elm-lang.org/packages/mdgriffith/style-elements/3.2.3
+-- using http://package.elm-lang.org/packages/mdgriffith/style-elements/3.2.3
+
+
+type Styles
+  = None
+  | Main
+  | Indicator
+  | Configurator
+
+
+stylesheet : StyleSheet Styles variation
+stylesheet =
+  Style.stylesheet
+    [ style None []
+    , style Main
+      [ Border.all 1
+      , Color.text Color.darkCharcoal
+      , Color.background Color.white
+      ]
+    , style Indicator
+      [ Border.all 1
+      ]
+    , style Configurator
+      [ Border.all 1
+      ]
+    ]
 
 
 root : Model -> Html Msg
 root model =
-    div
-        [ class "container" ]
-        [ p [] [ text "inebriatus" ]
-        , indicator model
-        , configurator model
-        ]
+  Element.viewport stylesheet <|
+    column Main
+      [ Element.Attributes.height <| fill 1 ]
+      [ titleBar
+      , indicator model
+      , drink
+      , configurator model ]
 
 
-indicator : Model -> Html Msg
+titleBar =
+  el None [] ( Element.text "INEBRIATVS" )
+
+
 indicator model =
-    div
-        [ class "indicator" ]
-        [ p [] [ text "indicator" ]
-        , button [ onClick Types.GetTimeAndDrink ] [ text "Drink" ]
-        , ul
-            []
-            (map (\l -> li [] [ text (toString l) ]) model.drinkTimes)
-        ]
+  column Indicator
+    []
+    (List.map ( \l -> el None [] ( Element.text (toString l) ) ) model.drinkTimes)
 
 
-configurator : Model -> Html Msg
+drink =
+  el None [ onClick Types.GetTimeAndDrink ] <| Element.button ( Element.text "BIBE")
+
+
 configurator model =
-    if model.configOpen then
-        configuratorOpen model
-    else
-        configuratorClosed model
+  if model.configOpen then
+    configuratorOpen model
+  else
+    configuratorClosed model
 
 
-configuratorOpen : Model -> Html Msg
 configuratorOpen model =
-    div
-        [ class "configurator" ]
-        [ div
-            [ onClick Types.ToggleConfig ]
-            [ p [] [ text "close " ] ]
-        , p [] [ text "configurator" ]
-        , p [] [ text "Offset: ", text (toString model.offset) ]
-        ]
+  column Configurator
+    []
+    [ el None [ onClick Types.ToggleConfig] ( Element.text "CONFIGVRA")
+    , el None [] ( Element.text ( toString model.offset ))
+    ]
 
 
-configuratorClosed : Model -> Html Msg
 configuratorClosed model =
-    div
-        []
-        [ p [ onClick Types.ToggleConfig ] [ text "configurator " ] ]
+  el Configurator [ onClick Types.ToggleConfig] ( Element.text "CONFIGVRA")

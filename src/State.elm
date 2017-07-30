@@ -7,7 +7,12 @@ import Types exposing (..)
 
 init : ( Model, Cmd Msg )
 init =
-    ( { drinkTimes = [], offset = 1, configOpen = False }, Cmd.none )
+    ( { drinkTimes = []
+      , offset = 1
+      , configOpen = False
+      , mode = Types.PercentageClickFourOz
+      }
+    , Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -25,8 +30,8 @@ update action model =
         ToggleConfig ->
             ( { model | configOpen = not model.configOpen }, Cmd.none )
 
-        SetMode mode ->
-            ( model, Cmd.none )
+        SetMode newMode ->
+            ( { model | mode = newMode }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg

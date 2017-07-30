@@ -7,6 +7,7 @@ type alias Model =
     { drinkTimes : List Time
     , offset : Int
     , configOpen : Bool
+    , mode : Mode
     }
 
 
@@ -15,4 +16,8 @@ type Msg
     | GetTimeAndDrink
     | SetOffset Int
     | ToggleConfig
-    | SetMode String
+    | SetMode Mode
+
+
+type Mode
+    = PercentageClickFourOz
