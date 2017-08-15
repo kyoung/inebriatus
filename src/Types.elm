@@ -18,8 +18,16 @@ type Msg
     | GetTimeAndDrink
     | SetOffset String
     | ToggleConfig
-    | SetMode Mode
+    | SetMode String
 
 
 type Mode
     = PercentageClickFourOz
+    | WorkDrinks
+
+
+modeString : Mode -> String
+modeString mode =
+  case mode of
+    PercentageClickFourOz -> "% click, 4oz."
+    WorkDrinks -> "click per drink"

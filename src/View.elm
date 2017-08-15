@@ -38,13 +38,6 @@ root model =
     , indicator model
     , drink
     , configurator model ]
-  -- Element.viewport stylesheet <|
-  --   column Main
-  --     [ Element.Attributes.height <| fill 1 ]
-  --     [ titleBar
-  --     , indicator model
-  --     , drink
-  --     , configurator model ]
 
 
 titleBar =
@@ -57,7 +50,6 @@ indicator model =
     ( List.map
         ( \n -> indicatorLight model.lightsLit n  )
         ( List.range 0 ( model.lightsTotal - 1 ) ) )
-
 
 
 indicatorLight : Float -> Int  -> Html.Html Msg
@@ -93,6 +85,7 @@ indicatorLight lit n =
           []
       ]
 
+
 lightColour : Int -> String
 lightColour n =
   if n < 4 then
@@ -102,12 +95,12 @@ lightColour n =
   else
     "#ff0000"
 
+
 drink =
   div
     [ pointerStyle
     , onClick Types.GetTimeAndDrink ]
     [ text "BIBE" ]
-  -- el Drink [ onClick Types.GetTimeAndDrink ] <| Element.button ( el Drink [] ( Element.text "BIBE" ) )
 
 
 configurator model =
@@ -124,15 +117,22 @@ configuratorOpen model =
         [ onClick Types.ToggleConfig
         , pointerStyle ]
         [ text "CONFIGVRA" ]
-    , configuratorDrinkIndexSetter model ]
+    , configuratorDrinkIndexSetter model
+    , configuratorDrinkMode model
+    ]
 
 
-  -- column Configurator
-  --   []
-  --   [ el None [ onClick Types.ToggleConfig] ( Element.text "CONFIGVRA")
-  --   , el None [] ( Element.text ( toString model.offset ))
-  --   , configuratorDrinkIndexSetter model
-  --   ]
+configuratorDrinkMode model =
+  div
+    [ rowStyle ]
+    [ text "drink mode"
+    , Html.select
+        [ onInput Types.SetMode ]
+        ( List.map
+            ( \m -> Html.option [ value ( Types.modeString m ) ] [ text ( Types.modeString m ) ] )
+            [ Types.PercentageClickFourOz, Types.WorkDrinks ]
+        )
+    ]
 
 
 configuratorDrinkIndexSetter model =
@@ -148,21 +148,9 @@ configuratorDrinkIndexSetter model =
     , text ( toString model.offset )
     ]
 
-  -- row ConfiguratorSlider
-  --   []
-  --   [ Element.html (
-  --     input
-  --     [ type_ "range"
-  --     , min "0"
-  --     , max "100"
-  --     , value <| toString ( model.offset * 50 )
-  --     , onInput Types.SetOffset ] [] )
-  --   ]
-
 
 configuratorClosed model =
   div
     [ onClick Types.ToggleConfig
     , pointerStyle ]
     [ text "CONFIGVRA" ]
-  -- el Configurator [ onClick Types.ToggleConfig] ( Element.text "CONFIGVRA")

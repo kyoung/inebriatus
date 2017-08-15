@@ -37,7 +37,16 @@ update action model =
             ( { model | configOpen = not model.configOpen }, Cmd.none )
 
         SetMode newMode ->
-            ( { model | mode = newMode }, Cmd.none )
+            let
+              f = \nm ->
+                if ( modeString PercentageClickFourOz ) == nm then
+                   PercentageClickFourOz
+                else if ( modeString WorkDrinks ) == nm then
+                   WorkDrinks
+                else
+                   PercentageClickFourOz
+            in
+              ( { model | mode = f newMode }, Cmd.none )
 
 
 calcLights : List Time -> Float
@@ -48,7 +57,7 @@ calcLights drinkTimes =
     metabol_per_sec = 0.00089
     target_light = 7
   in
-    
+
     toFloat ( List.length drinkTimes )
 
 
