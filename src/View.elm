@@ -1,92 +1,113 @@
 module View exposing (..)
 
-import Color
-import Element exposing (..)
-import Element.Attributes exposing (..)
-import Element.Events exposing (onClick)
-import Style exposing (..)
-import Style.Border as Border
-import Style.Color as Color
+import Html exposing (div, input, text, p)
+import Html.Attributes as Hattr exposing (class, min, max, value, type_, style)
+import Html.Events exposing (onClick, onInput)
 
-import Html exposing (Html)
-import Html.Attributes exposing (class)
+import Svg exposing (svg)
+import Svg.Attributes as Sattr exposing (..)
+
 import List exposing (map)
+
 import Types exposing (Model, Msg)
 
 
--- using http://package.elm-lang.org/packages/mdgriffith/style-elements/3.2.3
-
-
-type Styles
-  = None
-  | Main
-  | Indicator
-  | Configurator
-  | Light
-  | LitLight
-  | Drink
-
-
-stylesheet : StyleSheet Styles variation
-stylesheet =
-  Style.stylesheet
-    [ style None []
-    , style Main
-      [ Border.all 1
-      , Color.text Color.darkCharcoal
-      , Color.background Color.white
-      ]
-    , style Indicator
-      [ Border.all 1
-      ]
-    , style Configurator
-      [ Border.all 1
-      , Style.cursor "pointer"
-      ]
-    , style Light
-      [ Border.all 1
-      ]
-    , style LitLight
-      [ Border.all 1
-      ,  Color.background Color.darkCharcoal
-      ]
-    , style Drink
-      [ Style.cursor "pointer"
-      ]
+columnStyle =
+  Hattr.style
+    [ ( "display", "flex" )
+    , ( "flex-direction", "column" )
+    , ( "align-items", "center" )
     ]
 
+rowStyle =
+  Hattr.style
+    [ ( "display", "flex" )
+    , ( "flex-direction", "row" )
+    ]
 
-root : Model -> Html Msg
+pointerStyle =
+  Hattr.style
+    [ ( "cursor", "pointer" ) ]
+
+
+root : Model -> Html.Html Msg
 root model =
-  Element.viewport stylesheet <|
-    column Main
-      [ Element.Attributes.height <| fill 1 ]
-      [ titleBar
-      , indicator model
-      , drink
-      , configurator model ]
+  div
+    [ columnStyle ]
+    [ titleBar
+    , indicator model
+    , drink
+    , configurator model ]
+  -- Element.viewport stylesheet <|
+  --   column Main
+  --     [ Element.Attributes.height <| fill 1 ]
+  --     [ titleBar
+  --     , indicator model
+  --     , drink
+  --     , configurator model ]
 
 
 titleBar =
-  el None [] ( Element.text "INEBRIATVS" )
+  div [] [ text "INEBRIATVS" ]
 
 
 indicator model =
-  row Indicator
-    []
-    ( List.map ( \n -> indicatorLight model.lightsLit n  ) ( List.range 0 ( model.lightsTotal - 1 ) ) )
+  div
+    [ rowStyle ]
+    ( List.map
+        ( \n -> indicatorLight model.lightsLit n  )
+        ( List.range 0 ( model.lightsTotal - 1 ) ) )
 
 
-indicatorLight : Float -> Int  -> Element Styles variation msg
+
+indicatorLight : Float -> Int  -> Html.Html Msg
 indicatorLight lit n =
   if ( toFloat n ) < lit then
-    circle 10 LitLight [] <| el None [] ( Element.text "" )
+    svg
+      [ Hattr.style
+          [ ( "viewBox", "0 0 10 10" )
+          , ( "height", "15px" ) ]
+      ]
+      [ Svg.circle
+          [ fill ( lightColour n )
+          , cx "5"
+          , cy "5"
+          , r "4"
+          , stroke "black"
+          , strokeWidth "1"]
+          []
+      ]
   else
-    circle 10 Light [] <| el None [] ( Element.text "" )
+    svg
+      [ Hattr.style
+          [ ( "viewBox", "0 0 10 10" )
+          , ( "height", "15px" ) ]
+      ]
+      [ Svg.circle
+          [ fill "#ffffff"
+          , cx "5"
+          , cy "5"
+          , r "4"
+          , stroke "black"
+          , strokeWidth "1"]
+          []
+      ]
 
+lightColour : Int -> String
+lightColour n =
+  if n < 4 then
+    "#0000ff"
+  else if n < 7 then
+    "#ffff00"
+  else
+    "#ff0000"
 
 drink =
-  el Drink [ onClick Types.GetTimeAndDrink ] <| Element.button ( el Drink [] ( Element.text "BIBE" ) )
+  div
+    [ pointerStyle
+    , onClick Types.GetTimeAndDrink ]
+    [ text "BIBE" ]
+  -- el Drink [ onClick Types.GetTimeAndDrink ] <| Element.button ( el Drink [] ( Element.text "BIBE" ) )
 
 
 configurator model =
@@ -97,12 +118,51 @@ configurator model =
 
 
 configuratorOpen model =
-  column Configurator
-    []
-    [ el None [ onClick Types.ToggleConfig] ( Element.text "CONFIGVRA")
-    , el None [] ( Element.text ( toString model.offset ))
+  div
+    [ columnStyle ]
+    [ div
+        [ onClick Types.ToggleConfig
+        , pointerStyle ]
+        [ text "CONFIGVRA" ]
+    , configuratorDrinkIndexSetter model ]
+
+
+  -- column Configurator
+  --   []
+  --   [ el None [ onClick Types.ToggleConfig] ( Element.text "CONFIGVRA")
+  --   , el None [] ( Element.text ( toString model.offset ))
+  --   , configuratorDrinkIndexSetter model
+  --   ]
+
+
+configuratorDrinkIndexSetter model =
+  div
+    [ rowStyle ]
+    [ text "drink offset"
+    , input
+        [ Hattr.type_ "range"
+        , Hattr.min "0"
+        , Hattr.max "100"
+        , Hattr.value <| toString ( model.offset * 50 )
+        , onInput Types.SetOffset ] []
+    , text ( toString model.offset )
     ]
+
+  -- row ConfiguratorSlider
+  --   []
+  --   [ Element.html (
+  --     input
+  --     [ type_ "range"
+  --     , min "0"
+  --     , max "100"
+  --     , value <| toString ( model.offset * 50 )
+  --     , onInput Types.SetOffset ] [] )
+  --   ]
 
 
 configuratorClosed model =
-  el Configurator [ onClick Types.ToggleConfig] ( Element.text "CONFIGVRA")
+  div
+    [ onClick Types.ToggleConfig
+    , pointerStyle ]
+    [ text "CONFIGVRA" ]
+  -- el Configurator [ onClick Types.ToggleConfig] ( Element.text "CONFIGVRA")

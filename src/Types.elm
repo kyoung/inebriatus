@@ -5,7 +5,7 @@ import Time exposing (Time)
 
 type alias Model =
     { drinkTimes : List Time
-    , offset : Int
+    , offset : Float
     , configOpen : Bool
     , mode : Mode
     , lightsLit : Float
@@ -16,7 +16,7 @@ type alias Model =
 type Msg
     = Drink Time.Time
     | GetTimeAndDrink
-    | SetOffset Int
+    | SetOffset String
     | ToggleConfig
     | SetMode Mode
 

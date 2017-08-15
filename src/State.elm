@@ -27,7 +27,11 @@ update action model =
             ( { model | drinkTimes = List.append model.drinkTimes [ time ], lightsLit =  calcLights ( List.append model.drinkTimes [ time ] ) }, Cmd.none )
 
         SetOffset value ->
-            ( model, Cmd.none )
+            case String.toFloat value  of
+              Err msg ->
+                ( model, Cmd.none )
+              Ok val ->
+                ( { model | offset = val / 50 }, Cmd.none )
 
         ToggleConfig ->
             ( { model | configOpen = not model.configOpen }, Cmd.none )
@@ -38,7 +42,14 @@ update action model =
 
 calcLights : List Time -> Float
 calcLights drinkTimes =
-  toFloat ( List.length drinkTimes )
+  let
+    ua_per_drink = 1.25
+    target_ua = 52.5
+    metabol_per_sec = 0.00089
+    target_light = 7
+  in
+    
+    toFloat ( List.length drinkTimes )
 
 
 subscriptions : Model -> Sub Msg
