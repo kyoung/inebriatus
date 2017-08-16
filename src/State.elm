@@ -13,6 +13,7 @@ init =
       , mode = Types.PercentageClickFourOz
       , lightsLit = 0.0
       , lightsTotal = 12
+      , lastTick = 0
       }
     , Cmd.none )
 
@@ -25,6 +26,9 @@ update action model =
 
         Drink time ->
             ( { model | drinkTimes = List.append model.drinkTimes [ time ], lightsLit =  calcLights ( List.append model.drinkTimes [ time ] ) }, Cmd.none )
+
+        Tick time ->
+            ( { model | lastTick = time }, Cmd.none )
 
         SetOffset value ->
             case String.toFloat value  of
@@ -62,5 +66,5 @@ calcLights drinkTimes =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
+subscriptions model =
+    Time.every Time.second Types.Tick

@@ -10,6 +10,7 @@ type alias Model =
     , mode : Mode
     , lightsLit : Float
     , lightsTotal : Int
+    , lastTick : Time
     }
 
 
@@ -19,6 +20,7 @@ type Msg
     | SetOffset String
     | ToggleConfig
     | SetMode String
+    | Tick Time.Time
 
 
 type Mode

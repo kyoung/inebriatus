@@ -91,7 +91,7 @@ root model =
 
 
 titleBar =
-    div [] [ text "INEBRIATVS" ]
+    div [ Hattr.style [ ( "padding-top", "40px" ) ] ] [ text "INEBRIATVS" ]
 
 
 drinkAndIndicator model =
