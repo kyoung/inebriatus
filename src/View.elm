@@ -66,7 +66,7 @@ darkBandStyle =
 
 bttnStyle =
     Hattr.style
-        [ ( "background-color", "#00dfff" )
+        [ ( "background-color", "#00a4bb" )
         , ( "color", "#fff" )
         , ( "padding", "5px 30px 5px 30px" )
         ]
@@ -187,6 +187,7 @@ configuratorOpen model =
         [ div
             [ onClick Types.ToggleConfig
             , pointerStyle
+            , Hattr.style [ ( "padding", "20px 0 20px 0" ) ]
             ]
             [ text "CONFIGVRA" ]
         , configuratorDrinkIndexSetter model
@@ -199,7 +200,9 @@ configuratorDrinkMode model =
         [ rowStyle
         , smallText
         ]
-        [ text "drink mode"
+        [ div
+            [ Hattr.style [ ( "margin-right", "20px" ) ] ]
+            [ text "drink mode" ]
         , Html.select
             [ onInput Types.SetMode ]
             (List.map
@@ -214,7 +217,9 @@ configuratorDrinkIndexSetter model =
         [ rowStyle
         , smallText
         ]
-        [ text "drink offset"
+        [ div
+            [ Hattr.style [ ( "margin-right", "20px" ) ] ]
+            [ text "drink offset" ]
         , input
             [ Hattr.type_ "range"
             , Hattr.min "0"
@@ -223,7 +228,9 @@ configuratorDrinkIndexSetter model =
             , onInput Types.SetOffset
             ]
             []
-        , text (toString model.offset)
+        , div
+            [ Hattr.style [ ( "width", "20px" ) ] ]
+            [ text (toString model.offset) ]
         ]
 
 
@@ -236,6 +243,7 @@ configuratorClosed model =
         [ div
             [ onClick Types.ToggleConfig
             , pointerStyle
+            , Hattr.style [ ( "padding", "10px 0 10px 0" ) ]
             ]
             [ text "CONFIGVRA" ]
         ]
