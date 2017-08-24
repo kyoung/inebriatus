@@ -15,7 +15,8 @@ init =
       , lightsTotal = 12
       , lastTick = 0
       }
-    , Cmd.none )
+    , Cmd.none
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -25,44 +26,84 @@ update action model =
             ( model, Task.perform Drink Time.now )
 
         Drink time ->
-            ( { model | drinkTimes = List.append model.drinkTimes [ time ], lightsLit =  calcLights ( List.append model.drinkTimes [ time ] ) }, Cmd.none )
+            ( { model | drinkTimes = List.append model.drinkTimes [ time ], lightsLit = calcLights (List.append model.drinkTimes [ time ]) model.lastTick }, Cmd.none )
 
         Tick time ->
-            ( { model | lastTick = time }, Cmd.none )
+            ( { model | lastTick = time, lightsLit = calcLights model.drinkTimes time }, Cmd.none )
 
         SetOffset value ->
-            case String.toFloat value  of
-              Err msg ->
-                ( model, Cmd.none )
-              Ok val ->
-                ( { model | offset = val / 50 }, Cmd.none )
+            case String.toFloat value of
+                Err msg ->
+                    ( model, Cmd.none )
+
+                Ok val ->
+                    ( { model | offset = val / 50 }, Cmd.none )
 
         ToggleConfig ->
             ( { model | configOpen = not model.configOpen }, Cmd.none )
 
         SetMode newMode ->
             let
-              f = \nm ->
-                if ( modeString PercentageClickFourOz ) == nm then
-                   PercentageClickFourOz
-                else if ( modeString WorkDrinks ) == nm then
-                   WorkDrinks
-                else
-                   PercentageClickFourOz
+                f =
+                    \nm ->
+                        if modeString PercentageClickFourOz == nm then
+                            PercentageClickFourOz
+                        else if modeString WorkDrinks == nm then
+                            WorkDrinks
+                        else
+                            PercentageClickFourOz
             in
-              ( { model | mode = f newMode }, Cmd.none )
+            ( { model | mode = f newMode }, Cmd.none )
 
 
-calcLights : List Time -> Float
-calcLights drinkTimes =
-  let
-    ua_per_drink = 1.25
-    target_ua = 52.5
-    metabol_per_sec = 0.00089
-    target_light = 7
-  in
+positiveVal : Float -> Float
+positiveVal n =
+    if n > 0 then
+        n
+    else
+        0
 
-    toFloat ( List.length drinkTimes )
+
+calcLights : List Time -> Time -> Float
+calcLights drinkTimes tNow =
+    let
+        target_ua =
+            52.5
+
+        target_light =
+            7
+
+        metabol_per_sec =
+            0.00089
+
+        ( last_ua, last_t ) =
+            sum_ua drinkTimes
+
+        current_ua =
+            last_ua - positiveVal (metabol_per_sec * (Time.inSeconds tNow - Time.inSeconds last_t))
+    in
+    (current_ua / target_ua) * target_light
+
+
+sum_ua : List Time -> ( Float, Time )
+sum_ua drinkTimes =
+    let
+        ua_per_drink =
+            1.25
+
+        metabol_per_sec =
+            0.00089
+
+        base_data =
+            List.map2 (,) (List.repeat (List.length drinkTimes) 0) drinkTimes
+
+        sum_drink ( t1_ua, t1_t ) ( t2_ua, t2_t ) =
+            if t1_t == 0 then
+                ( ua_per_drink, t2_t )
+            else
+                ( t1_ua + ua_per_drink - positiveVal (metabol_per_sec * (Time.inSeconds t2_t - Time.inSeconds t1_t)), t2_t )
+    in
+    List.foldl sum_drink ( 0, 0 ) base_data
 
 
 subscriptions : Model -> Sub Msg
