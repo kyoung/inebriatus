@@ -30,6 +30,9 @@ type Mode
 
 modeString : Mode -> String
 modeString mode =
-  case mode of
-    PercentageClickFourOz -> "% click, 4oz."
-    WorkDrinks -> "click per drink"
+    case mode of
+        PercentageClickFourOz ->
+            "% click, 4oz. (Farmhouse)"
+
+        WorkDrinks ->
+            "click per drink (Corporate Event)"

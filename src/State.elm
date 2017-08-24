@@ -1,4 +1,4 @@
-module State exposing (init, subscriptions, update)
+module State exposing (init, subscriptions, sumDrink, sumUA, update)
 
 import Task
 import Time exposing (Time)
@@ -26,10 +26,15 @@ update action model =
             ( model, Task.perform Drink Time.now )
 
         Drink time ->
-            ( { model | drinkTimes = List.append model.drinkTimes [ time ], lightsLit = calcLights (List.append model.drinkTimes [ time ]) model.lastTick }, Cmd.none )
+            ( { model
+                | drinkTimes = List.append model.drinkTimes [ time ]
+                , lightsLit = calcLights (List.append model.drinkTimes [ time ]) model.lastTick model.offset
+              }
+            , Cmd.none
+            )
 
         Tick time ->
-            ( { model | lastTick = time, lightsLit = calcLights model.drinkTimes time }, Cmd.none )
+            ( { model | lastTick = time, lightsLit = calcLights model.drinkTimes time model.offset }, Cmd.none )
 
         SetOffset value ->
             case String.toFloat value of
@@ -56,16 +61,16 @@ update action model =
             ( { model | mode = f newMode }, Cmd.none )
 
 
-positiveVal : Float -> Float
-positiveVal n =
+zeroBlock : Float -> Float
+zeroBlock n =
     if n > 0 then
         n
     else
         0
 
 
-calcLights : List Time -> Time -> Float
-calcLights drinkTimes tNow =
+calcLights : List Time -> Time -> Float -> Float
+calcLights drinkTimes tNow offset =
     let
         target_ua =
             52.5
@@ -73,37 +78,55 @@ calcLights drinkTimes tNow =
         target_light =
             7
 
-        metabol_per_sec =
-            0.00089
-
         ( last_ua, last_t ) =
-            sum_ua drinkTimes
+            sumUA drinkTimes offset
 
         current_ua =
-            last_ua - positiveVal (metabol_per_sec * (Time.inSeconds tNow - Time.inSeconds last_t))
+            zeroBlock
+                (last_ua
+                    - (metabolUAPerSec
+                        * offset
+                        * Time.inSeconds (tNow - last_t)
+                      )
+                )
     in
     (current_ua / target_ua) * target_light
 
 
-sum_ua : List Time -> ( Float, Time )
-sum_ua drinkTimes =
+uaPerDrink =
+    1.25
+
+
+metabolUAPerSec =
+    0.00089
+
+
+sumDrink : Float -> ( Float, Time ) -> ( Float, Time ) -> ( Float, Time )
+sumDrink offset ( t2_ua, t2_time ) ( t1_ua, t1_time ) =
+    if t1_time == 0 then
+        ( uaPerDrink, t2_time )
+    else
+        ( t1_ua
+            + uaPerDrink
+            - zeroBlock
+                (metabolUAPerSec
+                    * offset
+                    * Time.inSeconds (t2_time - t1_time)
+                )
+        , t2_time
+        )
+
+
+sumUA : List Time -> Float -> ( Float, Time )
+sumUA drinkTimes offset =
     let
-        ua_per_drink =
-            1.25
-
-        metabol_per_sec =
-            0.00089
-
         base_data =
             List.map2 (,) (List.repeat (List.length drinkTimes) 0) drinkTimes
 
-        sum_drink ( t1_ua, t1_t ) ( t2_ua, t2_t ) =
-            if t1_t == 0 then
-                ( ua_per_drink, t2_t )
-            else
-                ( t1_ua + ua_per_drink - positiveVal (metabol_per_sec * (Time.inSeconds t2_t - Time.inSeconds t1_t)), t2_t )
+        offsetSumDrink =
+            sumDrink offset
     in
-    List.foldl sum_drink ( 0, 0 ) base_data
+    List.foldl offsetSumDrink ( 0, 0 ) base_data
 
 
 subscriptions : Model -> Sub Msg

@@ -123,6 +123,7 @@ indicatorLight lit n =
             ]
             [ Svg.circle
                 [ fill (lightColour n)
+                , Sattr.opacity (toString (lit - toFloat n))
                 , cx "5"
                 , cy "5"
                 , r "4"
