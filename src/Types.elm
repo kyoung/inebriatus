@@ -35,4 +35,4 @@ modeString mode =
             "% click, 4oz. (Farmhouse)"
 
         WorkDrinks ->
-            "click per drink (Corporate Event)"
+            "click per half drink (Corporate Event)"

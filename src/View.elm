@@ -44,6 +44,7 @@ rowStyle =
     Hattr.style
         [ ( "display", "flex" )
         , ( "flex-direction", "row" )
+        , ( "width", "100%" )
         ]
 
 
@@ -54,7 +55,11 @@ pointerStyle =
 
 sysFontStyle =
     Hattr.style
-        [ ( "font-family", "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Roboto\", \"Oxygen\", \"Ubuntu\", \"Cantarell\", \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", sans-serif" ) ]
+        [ ( "font-family"
+          , "-apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Roboto\", \"Oxygen\", \"Ubuntu\", \"Cantarell\", \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", sans-serif"
+          )
+        , ( "font-size", "2em" )
+        ]
 
 
 darkBandStyle =
@@ -68,7 +73,8 @@ bttnStyle =
     Hattr.style
         [ ( "background-color", "#00a4bb" )
         , ( "color", "#fff" )
-        , ( "padding", "5px 30px 5px 30px" )
+        , ( "padding", "5px 60px 5px 60px" )
+        , ( "margin-top", "20px" )
         ]
 
 
@@ -116,17 +122,17 @@ indicatorLight lit n =
     if toFloat n < lit then
         svg
             [ Hattr.style
-                [ ( "viewBox", "0 0 10 10" )
-                , ( "height", "15px" )
-                , ( "width", "15px" )
+                [ ( "viewBox", "0 0 16 16" )
+                , ( "height", "20px" )
+                , ( "width", "20px" )
                 ]
             ]
             [ Svg.circle
                 [ fill (lightColour n)
                 , Sattr.opacity (toString (lit - toFloat n))
-                , cx "5"
-                , cy "5"
-                , r "4"
+                , cx "10"
+                , cy "10"
+                , r "8"
                 , stroke "black"
                 , strokeWidth "1"
                 ]
@@ -135,16 +141,16 @@ indicatorLight lit n =
     else
         svg
             [ Hattr.style
-                [ ( "viewBox", "0 0 10 10" )
-                , ( "height", "15px" )
-                , ( "width", "15px" )
+                [ ( "viewBox", "0 0 16 16" )
+                , ( "height", "20px" )
+                , ( "width", "20px" )
                 ]
             ]
             [ Svg.circle
                 [ fill "#ffffff"
-                , cx "5"
-                , cy "5"
-                , r "4"
+                , cx "10"
+                , cy "10"
+                , r "8"
                 , stroke "black"
                 , strokeWidth "1"
                 ]
@@ -200,6 +206,7 @@ configuratorDrinkMode model =
     div
         [ rowStyle
         , smallText
+        , spreadStyle "full"
         ]
         [ div
             [ Hattr.style [ ( "margin-right", "20px" ) ] ]
@@ -208,7 +215,8 @@ configuratorDrinkMode model =
             [ onInput Types.SetMode ]
             (List.map
                 (\m -> Html.option [ value (Types.modeString m) ] [ text (Types.modeString m) ])
-                [ Types.PercentageClickFourOz, Types.WorkDrinks ]
+                -- [ Types.PercentageClickFourOz, Types.WorkDrinks ]
+                [ Types.PercentageClickFourOz ]
             )
         ]
 
@@ -217,10 +225,11 @@ configuratorDrinkIndexSetter model =
     div
         [ rowStyle
         , smallText
+        , spreadStyle "full"
         ]
         [ div
             [ Hattr.style [ ( "margin-right", "20px" ) ] ]
-            [ text "drink offset" ]
+            [ text "metabolic deviation" ]
         , input
             [ Hattr.type_ "range"
             , Hattr.min "0"
@@ -230,7 +239,7 @@ configuratorDrinkIndexSetter model =
             ]
             []
         , div
-            [ Hattr.style [ ( "width", "20px" ) ] ]
+            [ Hattr.style [ ( "width", "60px" ) ] ]
             [ text (toString model.offset) ]
         ]
 
